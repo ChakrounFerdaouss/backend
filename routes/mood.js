@@ -5,9 +5,8 @@ const authenticateToken = require('../middleware/auth');
 // ➕ Create or Update Mood Log for a given date
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { date, moodType } = req.body;
+    const { date, moodType, notes } = req.body;
 
-    // Recherche d'une entrée existante pour le même jour
     const existingMood = await MoodLog.findOne({
       userId: req.user.userId,
       date: new Date(date)
@@ -15,15 +14,16 @@ router.post('/', authenticateToken, async (req, res) => {
 
     if (existingMood) {
       existingMood.moodType = moodType;
+      existingMood.notes = notes;
       await existingMood.save();
-      return res.status(200).json(existingMood); // Mise à jour
+      return res.status(200).json(existingMood);
     }
 
-    // Création d'une nouvelle entrée
     const moodLog = new MoodLog({
       userId: req.user.userId,
       date,
-      moodType
+      moodType,
+      notes
     });
     await moodLog.save();
 
@@ -46,7 +46,7 @@ router.get('/', authenticateToken, async (req, res) => {
     } else if (month && year) {
       const startDate = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
       const endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + 1); // Début du mois suivant
+      endDate.setMonth(endDate.getMonth() + 1);
 
       filter.date = {
         $gte: startDate,
@@ -65,10 +65,10 @@ router.get('/', authenticateToken, async (req, res) => {
 // ✏️ Update Mood Log by ID
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const { date, moodType } = req.body;
+    const { date, moodType, notes } = req.body;
     const updatedMood = await MoodLog.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.userId },
-      { date, moodType },
+      { date, moodType, notes },
       { new: true }
     );
 
@@ -95,7 +95,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Mood log not found or unauthorized.' });
     }
 
-    res.status(204).send(); // No Content
+    res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error deleting mood log.' });

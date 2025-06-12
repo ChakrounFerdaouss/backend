@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const moodLogSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // référence au modèle User
+    ref: 'User',
     required: true,
   },
   date: {
@@ -14,11 +14,14 @@ const moodLogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  notes: {
+    type: String,
+    default: '', // facultatif mais recommandé
+  }
 }, {
   timestamps: true
 });
 
-// Optionnel : empêcher plusieurs logs pour le même user à la même date
 moodLogSchema.index({ userId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('MoodLog', moodLogSchema);

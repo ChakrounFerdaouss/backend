@@ -3,34 +3,24 @@ const MoodLog = require('../models/MoodLog');
 const authenticateToken = require('../middleware/auth');
 
 // ➕ Create or Update Mood Log for a given date
+// POST /api/moods
 router.post('/', authenticateToken, async (req, res) => {
   try {
     const { date, moodType, notes } = req.body;
-
-    const existingMood = await MoodLog.findOne({
-      userId: req.user.userId,
-      date: new Date(date)
-    });
-
-    if (existingMood) {
-      existingMood.moodType = moodType;
-      existingMood.notes = notes;
-      await existingMood.save();
-      return res.status(200).json(existingMood);
-    }
 
     const moodLog = new MoodLog({
       userId: req.user.userId,
       date,
       moodType,
-      notes
+      notes,
     });
+
     await moodLog.save();
 
     res.status(201).json(moodLog);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating or updating mood log.' });
+    res.status(500).json({ message: 'Erreur lors de la création du log d’humeur.' });
   }
 });
 

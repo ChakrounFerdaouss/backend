@@ -16,12 +16,13 @@ const moodLogSchema = new mongoose.Schema({
   },
   notes: {
     type: String,
-    default: '', // facultatif mais recommandé
+    default: '', // champ facultatif mais utile
   }
 }, {
   timestamps: true
 });
 
-moodLogSchema.index({ userId: 1, date: 1 }, { unique: true });
+// ❌ Supprimer la contrainte d'unicité qui bloque les doublons par date
+// moodLogSchema.index({ userId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('MoodLog', moodLogSchema);

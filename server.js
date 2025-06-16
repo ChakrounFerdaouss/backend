@@ -8,7 +8,6 @@ const authenticateToken = require('./middleware/auth');
 
 // Routes
 const authRoutes = require('./routes/auth');
-const journalRoutes = require('./routes/journal');
 const moodRoutes = require('./routes/mood');
 
 const app = express();
@@ -22,7 +21,6 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 // Routes protégées
-app.use('/api/journals', authenticateToken, journalRoutes);
 app.use('/api/moods', authenticateToken, moodRoutes);
 
 // Route de test
